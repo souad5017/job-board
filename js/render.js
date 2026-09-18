@@ -1,10 +1,23 @@
 export function renderOffers(offers) {
 
     const listings = document.getElementById('listings');
-
+    listings.innerHTML = ''
     // console.log(offers)
 
+    if (offers.lenght === 0) {
+        listings.innerHTML = `
+         <p class="empty-message">Aucune offre disponible.</p>
+        `
+    }
+
+
     offers.forEach(offer => {
+        const date = new Date(offer.datePublication);
+        const dateForm = date.toLocaleDateString("fr-FR", {
+            day: "numeric",
+            month: "short",
+            year: 'numeric'
+        })
 
         listings.innerHTML += `
       <article class="job-card">
@@ -20,10 +33,10 @@ export function renderOffers(offers) {
             ` 
                    <span class="skill-tag"> ${tech} </span>
                    `
-        )}
+        ).join("")}
             </div>
             <div class="card-bottom">
-                <span class="job-date">${offer.datePublication}</span>
+                <span class="job-date">${dateForm}</span>
                 <a href="../offre-detail.html?id=${offer.id}" class="job-link">Voir l'offre →</a>
             </div>
         </article>
@@ -32,34 +45,27 @@ export function renderOffers(offers) {
 
 
 }
-
-    // "entreprise": "Acme Corp",
-    // "titre": "Développeur React",
-    // "ville": "Paris",
-    // "typeContrat": "Stage",
-    // "technologies": [
-    //   "React",
-    //   "Node.js",
-    //   "MongoDB"
-    // ],
-    // "description": "Développement de nouvelles fonctionnalités pour notre plateforme SaaS, en binôme avec l'équipe front-end.",
-    // "profil": "Étudiant en formation MERN, à l'aise avec JavaScript moderne (ES6+) et Git.",
-    // "contact": "recrutement@acmecorp.com",
-    // "datePublication": "2026-09-10",
-    // "suivie": false
-
 export function renderOfferDetail(offer) {
     const offerDetail = document.getElementById('offer-detail');
- console.log(offer)
+
+    const date = new Date(offer.datePublication);
+    const dateForm = date.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "short",
+        year: 'numeric'
+    })
+
+
+    console.log(offer)
     offerDetail.innerHTML = `
       <section class="offer-hero">
       <div>
         <div class="offer-hero-meta">
-          <span class="tag stage">${offer.typeContrat}</span>
-          <span>07 sept. 2026</span>
+          <span class="tag stage">${offer.typeContrat ?? ""}</span>
+          <span>${dateForm}</span>
         </div>
-        <h1>Stage Full-stack Next.js</h1>
-        <p class="company">Koala Studio • Bordeaux</p>
+        <h1>${offer.titre}</h1>
+        <p class="company">${offer.entreprise} • ${offer.ville}</p>
       </div>
       <button class="follow-btn">☆ Suivre</button>
     </section>
@@ -68,11 +74,11 @@ export function renderOfferDetail(offer) {
       <div class="stack">
         <div class="panel">
           <h2>Mission</h2>
-          <p>Koala Studio développe des outils pour le secteur éducatif. Vous contribuez à un projet Next.js avec authentification, gestion de contenu et API Node.js. Petite équipe, vrai impact.</p>
+          <p>${offer.description}</p>
         </div>
         <div class="panel">
           <h2>Profil recherché</h2>
-          <p>Maîtrise de React, bases de Next.js. Curieux, autonome, bon communicant.</p>
+          <p>${offer.profil}</p>
         </div>
       </div>
 
@@ -80,22 +86,21 @@ export function renderOfferDetail(offer) {
         <div class="panel">
           <h2>Technologies</h2>
           <div class="skill-tags">
-            <span class="skill-tag">Next.js</span>
-            <span class="skill-tag">Node.js</span>
-            <span class="skill-tag">TypeScript</span>
-          </div>
+        ${offer.technologies.map(element => {
+        return `<span class="skill-tag">${element}</span>`;
+    }).join(" ")}
         </div>
 
         <div class="panel">
           <h2>Entreprise</h2>
-          <p class="company-name">Koala Studio</p>
-          <p class="company-tagline">Studio web créatif &amp; développement sur mesure.</p>
-          <a href="#" class="company-link">koala.studio ↗</a>
+          <p class="company-name">${offer.entreprise ?? ""}</p>
+          <p class="company-tagline">${offer.sloganEntreprise ?? ""}</p>
+          <a href="${offer.lienEntreprise ?? '#'}" class="company-link">${offer.lienEntreprise ? offer.lienEntreprise + ' ↗' : ''}</a>
         </div>
 
         <div class="panel candidature-panel">
           <h2>Candidature</h2>
-          <a href="mailto:hello@koala.studio">hello@koala.studio</a>
+          <a href="${offer.contact ?? "#"}">${offer.contact ?? ""}</a>
         </div>
       </div>
     </div>
