@@ -27,6 +27,19 @@ async function initDetail() {
         console.error(error)
     }
 }
+
+const searchInput = document.getElementById('searchInput');
+
+
+searchInput.addEventListener('input', () => {
+    const search = searchInput.value
+    // console.log(search)
+    const result = searchOffers(offres, search)
+    renderOffers(result)
+
+    console.log(result)
+})
+
 const detailContainer = document.getElementById('offer-detail');
 if (detailContainer) {
     initDetail()
