@@ -1,9 +1,11 @@
 import { getData } from "./data.js"
 import { renderOffers, renderOfferDetail } from "./render.js"
+import { searchOffers } from "./filters.js"
 
+
+const offres = await getData()
 async function init() {
     try {
-        const offres = await getData()
         renderOffers(offres)
     }
     catch (error) {
@@ -16,10 +18,7 @@ async function initDetail() {
         const url = new URLSearchParams(window.location.search)
         const id = url.get('id')
         // console.log(id)
-
-        const offres = await getData()
-        
-        const offre =  offres.find(offre => offre.id == id)
+        const offre = offres.find(offre => offre.id == id)
 
 
         renderOfferDetail(offre);
@@ -29,9 +28,6 @@ async function initDetail() {
     }
 }
 const detailContainer = document.getElementById('offer-detail');
-
-
-
 if (detailContainer) {
     initDetail()
 } else {

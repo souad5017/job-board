@@ -1,10 +1,23 @@
 export function renderOffers(offers) {
 
     const listings = document.getElementById('listings');
-
+    listings.innerHTML = ''
     // console.log(offers)
 
+    if (offers.lenght === 0) {
+        listings.innerHTML = `
+         <p class="empty-message">Aucune offre disponible.</p>
+        `
+    }
+
+
     offers.forEach(offer => {
+        const date = new Date(offer.datePublication);
+        const dateForm = date.toLocaleDateString("fr-FR", {
+            day: "numeric",
+            month: "short",
+            year: 'numeric'
+        })
 
         listings.innerHTML += `
       <article class="job-card">
@@ -20,10 +33,10 @@ export function renderOffers(offers) {
             ` 
                    <span class="skill-tag"> ${tech} </span>
                    `
-        )}
+        ).join("")}
             </div>
             <div class="card-bottom">
-                <span class="job-date">${offer.datePublication}</span>
+                <span class="job-date">${dateForm}</span>
                 <a href="../offre-detail.html?id=${offer.id}" class="job-link">Voir l'offre →</a>
             </div>
         </article>
@@ -32,22 +45,6 @@ export function renderOffers(offers) {
 
 
 }
-
-// "entreprise": "Acme Corp",
-// "titre": "Développeur React",
-// "ville": "Paris",
-// "typeContrat": "Stage",
-// "technologies": [
-//   "React",
-//   "Node.js",
-//   "MongoDB"
-// ],
-// "description": "Développement de nouvelles fonctionnalités pour notre plateforme SaaS, en binôme avec l'équipe front-end.",
-// "profil": "Étudiant en formation MERN, à l'aise avec JavaScript moderne (ES6+) et Git.",
-// "contact": "recrutement@acmecorp.com",
-// "datePublication": "2026-09-10",
-// "suivie": false
-
 export function renderOfferDetail(offer) {
     const offerDetail = document.getElementById('offer-detail');
 
@@ -91,14 +88,14 @@ export function renderOfferDetail(offer) {
           <div class="skill-tags">
         ${offer.technologies.map(element => {
         return `<span class="skill-tag">${element}</span>`;
-        }).join(" ")}
+    }).join(" ")}
         </div>
 
         <div class="panel">
           <h2>Entreprise</h2>
           <p class="company-name">${offer.entreprise ?? ""}</p>
           <p class="company-tagline">${offer.sloganEntreprise ?? ""}</p>
-          <a href="${offer.lienEntreprise ?? '#'}" class="company-link">${offer.lienEntreprise ?offer.lienEntreprise + ' ↗'  : '' }</a>
+          <a href="${offer.lienEntreprise ?? '#'}" class="company-link">${offer.lienEntreprise ? offer.lienEntreprise + ' ↗' : ''}</a>
         </div>
 
         <div class="panel candidature-panel">
