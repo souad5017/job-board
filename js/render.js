@@ -1,63 +1,81 @@
+import { getFollowedIds, toggleFollowedId } from './storage.js';
+
 export function renderOffers(offers) {
 
     const listings = document.getElementById('listings');
-    listings.innerHTML = ''
-    // console.log(offers)
+    if (!listings) return;
 
-    if (offers.lenght === 0) {
+    listings.innerHTML = ''
+    
+    if (!offers || offers.length === 0) {
         listings.innerHTML = `
          <p class="empty-message">Aucune offre disponible.</p>
-        `
+        `;
+        return;
     }
 
+    const followedIds = getFollowedIds();
 
     offers.forEach(offer => {
+        const isSuivie = followedIds.includes(offer.id);
         const date = new Date(offer.datePublication);
         const dateForm = date.toLocaleDateString("fr-FR", {
             day: "numeric",
             month: "short",
             year: 'numeric'
-        })
+        });
 
         listings.innerHTML += `
       <article class="job-card">
             <div class="card-top">
                 <span class="tag stage">${offer.typeContrat}</span>
-                <button class="star-btn">☆</button>
+                <button class="star-btn ${isSuivie ? 'active' : ''}" data-id="${offer.id}">
+                    ${isSuivie ? '★' : '☆'}
+                </button>
             </div>
             <h3 class="job-title">${offer.titre}</h3>
             <p class="job-company">${offer.ville}</p>
             <p class="job-desc">${offer.description}</p>
             <div class="skill-tags">
-                ${offer.technologies.map(tech =>
+                ${offer.technologies ? offer.technologies.map(tech =>
             ` 
                    <span class="skill-tag"> ${tech} </span>
                    `
-        ).join("")}
+        ).join("") : ''}
             </div>
             <div class="card-bottom">
                 <span class="job-date">${dateForm}</span>
                 <a href="../offre-detail.html?id=${offer.id}" class="job-link">Voir l'offre →</a>
             </div>
         </article>
-    `
+    `;
     });
-    
 
-
+    const starButtons = listings.querySelectorAll('.star-btn');
+    starButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = Number(e.target.getAttribute('data-id'));
+            const isNowSuivie = toggleFollowedId(id);
+            e.target.textContent = isNowSuivie ? '★' : '☆';
+            e.target.classList.toggle('active', isNowSuivie);
+        });
+    });
 }
+
 export function renderOfferDetail(offer) {
     const offerDetail = document.getElementById('offer-detail');
+    if (!offerDetail || !offer) return;
+
+    const followedIds = getFollowedIds();
+    const isSuivie = followedIds.includes(offer.id);
 
     const date = new Date(offer.datePublication);
     const dateForm = date.toLocaleDateString("fr-FR", {
         day: "numeric",
         month: "short",
         year: 'numeric'
-    })
+    });
 
-
-    console.log(offer)
     offerDetail.innerHTML = `
       <section class="offer-hero">
       <div>
@@ -68,7 +86,9 @@ export function renderOfferDetail(offer) {
         <h1>${offer.titre}</h1>
         <p class="company">${offer.entreprise} • ${offer.ville}</p>
       </div>
-      <button class="follow-btn">☆ Suivre</button>
+      <button class="follow-btn ${isSuivie ? 'active' : ''}" id="detail-follow-btn" data-id="${offer.id}">
+        ${isSuivie ? '★ Suivi' : '☆ Suivre'}
+      </button>
     </section>
 
     <div class="content-grid">
@@ -87,9 +107,9 @@ export function renderOfferDetail(offer) {
         <div class="panel">
           <h2>Technologies</h2>
           <div class="skill-tags">
-        ${offer.technologies.map(element => {
+        ${offer.technologies ? offer.technologies.map(element => {
         return `<span class="skill-tag">${element}</span>`;
-    }).join(" ")}
+    }).join(" ") : ''}
         </div>
 
         <div class="panel">
@@ -105,5 +125,56 @@ export function renderOfferDetail(offer) {
         </div>
       </div>
     </div>
+    `;
+
+    const followBtn = document.getElementById('detail-follow-btn');
+    if (followBtn) {
+        followBtn.addEventListener('click', () => {
+            const isNowSuivie = toggleFollowedId(offer.id);
+            followBtn.textContent = isNowSuivie ? '★ Suivi' : '☆ Suivre';
+            followBtn.classList.toggle('active', isNowSuivie);
+        });
+    }
+}
+
+export function renderFilter(offres) {
+    const typeFilter = document.getElementById('type-filter')
+    const cityFilter = document.getElementById('city-filter')
+    const techFilter = document.getElementById('tech-filter')
+
+    if (!typeFilter || !cityFilter || !techFilter) return;
+
+    const typeFilterArr = [...new Set(offres.map(offre => offre.typeContrat))]
+    const cityFilterArr = [...new Set(offres.map(offer => offer.ville))]
+    const techFilterArr = []
+
+    offres.forEach(offer => {
+        if (offer.technologies) {
+            offer.technologies.forEach(tech => {
+                if (!techFilterArr.includes(tech)) {
+                    techFilterArr.push(tech)
+                }
+            })
+        }
+    })
+
+    typeFilter.innerHTML = `
+    <option value="">Tout type</option>
+    ${typeFilterArr.map(tech => `
+        <option value="${tech}">${tech}</option>
+        `).join('')}
+
+    `
+    cityFilter.innerHTML = `
+    <option value="">Toutes villes</option>
+    ${cityFilterArr.map(city =>`
+        <option value="${city}">${city}</option>
+        `).join('')}
+    `
+    techFilter.innerHTML = `
+    <option value="">Toutes techs</option>
+    ${techFilterArr.map(tech => `
+        <option value="${tech}">${tech}</option>
+        `).join('')}
     `
 }

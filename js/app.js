@@ -1,12 +1,13 @@
 import { getData } from "./data.js"
-import { renderOffers, renderOfferDetail } from "./render.js"
-import { searchOffers } from "./filters.js"
+import { renderOffers, renderOfferDetail, renderFilter } from "./render.js"
+import { searchOffers, typeFilterOffers, cityFilterOffers, techFilterOffers } from "./filters.js"
 
 
 const offres = await getData()
 async function init() {
     try {
         renderOffers(offres)
+        renderFilter(offres)
     }
     catch (error) {
         console.error(error)
@@ -29,16 +30,36 @@ async function initDetail() {
 }
 
 const searchInput = document.getElementById('searchInput');
+const typeFilter = document.getElementById('type-filter')
+const cityFilter = document.getElementById('city-filter')
+const techFilter = document.getElementById('tech-filter')
+
+function applyFilters() {
+
+    let result = offres;
+
+    const search = searchInput.value;
+    const type = typeFilter.value;
+    const city = cityFilter.value;
+    const tech = techFilter.value;
 
 
-searchInput.addEventListener('input', () => {
-    const search = searchInput.value
-    // console.log(search)
-    const result = searchOffers(offres, search)
-    renderOffers(result)
+    result = searchOffers(result, search);
+    result = typeFilterOffers(result, type);
+    result = cityFilterOffers(result, city);
+    result = techFilterOffers(result, tech);
 
-    console.log(result)
-})
+
+    renderOffers(result);
+
+    console.log(result);
+}
+searchInput.addEventListener("input", applyFilters);
+typeFilter.addEventListener("change", applyFilters);
+cityFilter.addEventListener("change", applyFilters);
+techFilter.addEventListener("change", applyFilters);
+
+
 
 const detailContainer = document.getElementById('offer-detail');
 if (detailContainer) {
