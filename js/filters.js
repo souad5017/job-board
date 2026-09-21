@@ -11,3 +11,32 @@ export function searchOffers(offers, search) {
 
   })
 }
+
+export function typeFilterOffers(offers , type){
+  if(type.trim() ===  ''){
+    return offers
+  }
+
+  return offers.filter(offer => offer.typeContrat.includes(type))
+}
+
+
+
+export function cityFilterOffers(offers, city) {
+    if (city === "") {
+        return offers;
+    }
+
+    return offers.filter(offer => offer.ville === city);
+}
+
+
+export function techFilterOffers(offers, tech) {
+    if (tech === "") {
+        return offers;
+    }
+
+    return offers.filter(offer =>
+        offer.technologies.includes(tech)
+    );
+}
