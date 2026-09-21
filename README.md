@@ -17,11 +17,12 @@ Le portail permet de :
 * consulter une liste d'offres ;
 * rechercher une offre par mot-clé ;
 * filtrer les offres par ville, technologie et type de contrat ;
+* combiner plusieurs filtres ;
 * trier les offres par date de publication ;
 * consulter le détail d'une offre ;
-* suivre des offres ;
-* déposer une offre ;
-* prévoir une interface d'administration des offres.
+* suivre ou retirer une offre suivie ;
+* conserver les offres suivies avec `localStorage` ;
+* gérer les états de chargement, d'erreur et d'absence de résultats.
 
 ---
 
@@ -33,6 +34,7 @@ L'apprenant peut :
 
 * consulter les offres ;
 * rechercher et filtrer les offres ;
+* combiner plusieurs filtres ;
 * consulter le détail d'une offre ;
 * suivre ou retirer une offre suivie.
 
@@ -40,19 +42,10 @@ L'apprenant peut :
 
 Le visiteur peut consulter les offres publiques.
 
-### Administrateur
-
-L'administrateur peut :
-
-* consulter les offres ;
-* créer une offre ;
-* modifier une offre ;
-* supprimer une offre ;
-* associer des technologies aux offres.
 
 ---
 
-## Pages prévues
+## Pages
 
 ### Pages principales
 
@@ -60,10 +53,6 @@ L'administrateur peut :
 * `offre-detail.html` — Détail d'une offre
 * `deposer-offre.html` — Dépôt d'une offre
 * `offres-suivies.html` — Offres suivies
-
-### Administration
-
-Une interface d'administration est prévue dans la conception du produit pour permettre la gestion des offres.
 
 ---
 
@@ -77,8 +66,15 @@ job-board/
 ├── deposer-offre.html
 ├── offres-suivies.html
 │
-├── assets/
-│   └── images/
+├── data/
+│   └── offres.json
+│
+├── js/
+│   ├── app.js
+│   ├── data.js
+│   ├── filters.js
+│   ├── render.js
+│   └── storage.js
 │
 ├── css/
 │   └── style.css
@@ -90,6 +86,92 @@ job-board/
 │
 └── README.md
 ```
+
+---
+
+## Fonctionnalités du Brief 2
+
+### Chargement des données
+
+Les offres sont stockées dans un fichier JSON :
+
+```text
+data/offres.json
+```
+
+Les données sont récupérées avec :
+
+* `fetch()`
+* `async/await`
+
+### Recherche
+
+La recherche permet de rechercher une offre par :
+
+* titre ;
+* entreprise ;
+* description.
+
+### Filtres
+
+Les offres peuvent être filtrées par :
+
+* type de contrat ;
+* ville ;
+* technologie.
+
+Les filtres sont combinables.
+
+Par exemple :
+
+```text
+Type : Stage
+Ville : Rabat
+Technologie : React
+```
+
+Les résultats sont mis à jour dynamiquement.
+
+### Détail d'une offre
+
+Chaque offre possède une page de détail accessible depuis la liste des offres.
+
+L'identifiant de l'offre est transmis dans l'URL :
+
+```text
+offre-detail.html?id=1
+```
+
+### Offres suivies
+
+Les offres peuvent être suivies par l'utilisateur.
+
+Les offres suivies sont conservées dans le navigateur avec :
+
+```text
+localStorage
+```
+
+---
+
+## Technologies
+
+Cette version utilise :
+
+* HTML5
+* CSS3
+* JavaScript Vanilla
+* JSON
+* Fetch API
+* Async/Await
+* DOM
+* LocalStorage
+* Git
+* GitHub
+
+Aucun framework JavaScript n'est utilisé dans cette version.
+
+Le backend, la base de données et l'API REST seront développés dans les briefs suivants.
 
 ---
 
@@ -135,20 +217,6 @@ https://outergamoustafa-1764845699446.atlassian.net/jira/software/projects/PJB/b
 
 ---
 
-## Technologies
-
-Pour cette première version :
-
-* HTML5
-* CSS3
-* Responsive Design
-* Git
-* GitHub
-
-JavaScript dynamique et les fonctionnalités backend seront développés dans les briefs suivants.
-
----
-
 ## Responsive Design
 
 L'interface est conçue pour être utilisable sur :
@@ -161,9 +229,9 @@ L'objectif est de conserver une interface claire, lisible et cohérente sur les 
 
 ---
 
-## Hors périmètre
+## Hors périmètre du Brief 2
 
-Cette première version n'intègre pas :
+Cette version n'intègre pas encore :
 
 * authentification ;
 * création de compte ;
@@ -187,11 +255,48 @@ Cette première version n'intègre pas :
 
 Les prochaines versions pourront intégrer :
 
-* JavaScript dynamique ;
-* gestion des filtres ;
-* recherche dynamique ;
-* gestion des offres suivies ;
-* backend Express/EJS/MySQL ;
+* backend Express/EJS ;
+* MySQL ;
+* API REST ;
+* authentification ;
 * gestion complète des offres ;
-* administration des offres.
+* interface d'administration fonctionnelle ;
+* gestion des utilisateurs ;
+* gestion des candidatures.
 
+---
+
+## Installation et lancement
+
+Cloner le projet :
+
+```bash
+git clone https://github.com/souad5017/job-board.git
+```
+
+Se placer dans le projet :
+
+```bash
+cd job-board
+```
+
+L'application doit être lancée avec un serveur local afin de permettre le chargement du fichier JSON avec `fetch()`.
+
+Par exemple, avec l'extension **Live Server** de VS Code.
+
+---
+
+## Git
+
+Le projet utilise Git pour le suivi des versions.
+
+Les fonctionnalités sont développées sur des branches dédiées, puis intégrées dans la branche principale.
+
+Exemples de branches :
+
+```text
+brief-2/json-data
+brief-2/dynamic-rendering
+brief-2/filters-search
+brief-2/followed-offers
+```
