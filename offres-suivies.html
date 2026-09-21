@@ -19,36 +19,43 @@
             <a href="index.html">Offres</a>
             <a href="offres-suivies.html" class="active">Suivies</a>
             <a href="./deposer-offre.html">Déposer</a>
-            <a href="/admin/dashboard.html" >Admin</a>
+            <a href="/admin/dashboard.html">Admin</a>
         </nav>
     </header>
 
     <div class="page suivies-page">
         <h1>Offres suivies</h1>
-        <p class="page-sub">1 offre enregistrée dans ce navigateur</p>
-
-        <div class="followed-grid">
-            <article class="job-card">
-                <div class="card-top">
-                    <span class="tag alternance">Alternance</span>
-                    <button class="star-btn active">★</button>
-                </div>
-                <h3 class="job-title">Alternant DevOps &amp; Back-end</h3>
-                <p class="job-company">Axeptio • Lyon</p>
-                <p class="job-desc">Automatiser nos déploiements et renforcer notre infrastructure cloud AWS.</p>
-                <div class="skill-tags">
-                    <span class="skill-tag">Node.js</span>
-                    <span class="skill-tag">Docker</span>
-                    <span class="skill-tag">Express</span>
-                </div>
-                <div class="card-bottom">
-                    <span class="job-date">06 sept. 2026</span>
-                    <a href="#" class="job-link">Voir l'offre →</a>
-                </div>
-            </article>
-        </div>
+        <p class="page-sub" id="suivies-count">Chargement...</p>
+        <div class="followed-grid" id="listings"></div>
     </div>
 
+    <script type="module">
+import { getData } from './js/data.js';
+import { getFollowedIds } from './js/storage.js';
+import { renderOffers } from './js/render.js';
+
+async function initSuiviesPage() {
+    const countText = document.getElementById('suivies-count');
+    
+    const allOffres = await getData();
+    
+    function updatePage() {
+        const followedIds = getFollowedIds().map(id => Number(id));
+        const suiviOffres = allOffres.filter(offer => followedIds.includes(Number(offer.id)));
+
+        if (countText) {
+            const count = suiviOffres.length;
+            countText.textContent = `${count} offre${count > 1 ? 's' : ''} enregistrée${count > 1 ? 's' : ''} dans ce navigateur`;
+        }
+        
+        renderOffers(suiviOffres, updatePage);
+    }
+
+    updatePage();
+}
+
+initSuiviesPage();
+    </script>
 </body>
 
 </html>
