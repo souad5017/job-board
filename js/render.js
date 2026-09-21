@@ -106,3 +106,43 @@ export function renderOfferDetail(offer) {
     </div>
     `
 }
+
+export function renderFilter(offres) {
+    const typeFilter = document.getElementById('type-filter')
+    const cityFilter = document.getElementById('city-filter')
+    const techFilter = document.getElementById('tech-filter')
+
+
+    const typeFilterArr = [...new Set(offres.map(offre => offre.typeContrat))]
+    const cityFilterArr = [...new Set(offres.map(offer => offer.ville))]
+    const techFilterArr = []
+
+    offres.forEach(offer => {
+        offer.technologies.forEach(tech => {
+            if (!techFilterArr.includes(tech)) {
+                techFilterArr.push(tech)
+            }
+        })
+    })
+    // console.log(techFilterArr)
+
+    typeFilter.innerHTML = `
+    <option value="">Tout type</option>
+    ${typeFilterArr.map(tech => `
+        <option value="${tech}">${tech}</option>
+        `)}
+
+    `
+    cityFilter.innerHTML = `
+    <option value="">Toutes villes</option>
+    ${cityFilterArr.map(city =>`
+        <option value="${city}">${city}</option>
+        `)}
+    `
+    techFilter.innerHTML = `
+    <option value="">Toutes techs</option>
+    ${techFilterArr.map(tech => `
+        <option value="${tech}">${tech}</option>
+        `)}
+    `
+}
