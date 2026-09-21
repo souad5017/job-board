@@ -30,30 +30,31 @@
     </div>
 
     <script type="module">
-        import { fetchOffres } from './js/data.js';
-        import { getFollowedIds } from './js/storage.js';
-        import { renderOffers } from './js/render.js';
+import { getData } from './js/data.js';
+import { getFollowedIds } from './js/storage.js';
+import { renderOffers } from './js/render.js';
 
-        async function initSuiviesPage() {
-            const countText = document.getElementById('suivies-count');
-            
-            const allOffres = await fetchOffres();
-            
-            function updatePage() {
-                const followedIds = getFollowedIds();
-                const suiviOffres = allOffres.filter(offer => followedIds.includes(offer.id));
+async function initSuiviesPage() {
+    const countText = document.getElementById('suivies-count');
+    
+    const allOffres = await getData();
+    
+    function updatePage() {
+        const followedIds = getFollowedIds().map(id => Number(id));
+        const suiviOffres = allOffres.filter(offer => followedIds.includes(Number(offer.id)));
 
-                if (countText) {
-                    const count = suiviOffres.length;
-                    countText.textContent = `${count} offre${count > 1 ? 's' : ''} enregistrée${count > 1 ? 's' : ''} dans ce navigateur`;
-                }
-                renderOffers(suiviOffres, updatePage);
-            }
-
-            updatePage();
+        if (countText) {
+            const count = suiviOffres.length;
+            countText.textContent = `${count} offre${count > 1 ? 's' : ''} enregistrée${count > 1 ? 's' : ''} dans ce navigateur`;
         }
+        
+        renderOffers(suiviOffres, updatePage);
+    }
 
-        initSuiviesPage();
+    updatePage();
+}
+
+initSuiviesPage();
     </script>
 </body>
 
