@@ -54,11 +54,12 @@ function applyFilters() {
 
     console.log(result);
 }
-searchInput.addEventListener("input", applyFilters);
-typeFilter.addEventListener("change", applyFilters);
-cityFilter.addEventListener("change", applyFilters);
-techFilter.addEventListener("change", applyFilters);
-
+if (searchInput && typeFilter && cityFilter && techFilter) {
+    searchInput.addEventListener("input", applyFilters);
+    typeFilter.addEventListener("change", applyFilters);
+    cityFilter.addEventListener("change", applyFilters);
+    techFilter.addEventListener("change", applyFilters);
+}
 
 
 const detailContainer = document.getElementById('offer-detail');
