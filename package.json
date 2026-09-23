@@ -1,0 +1,26 @@
+{
+  "name": "job-board",
+  "version": "1.0.0",
+  "description": "Portail web interne permettant de centraliser les offres de stages et d'alternances pour les apprenants.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:seed": "node database/seed.js"
+    
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/souad5017/job-board.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/souad5017/job-board/issues"
+  },
+  "homepage": "https://github.com/souad5017/job-board#readme"
+}
