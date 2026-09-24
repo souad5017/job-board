@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db:seed": "node database/seed.js"
+    "db:seed": "node database/seed.js",
+    "db:reset": "node database/reset.js"
+
     
   },
   "repository": {
