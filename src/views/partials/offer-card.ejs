@@ -1,0 +1,71 @@
+<%
+    const date = new Date(offer.date_publication)
+
+    const dateForm = date.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+    })
+%>
+
+<article class="job-card">
+
+    <div class="card-top">
+
+        <span class="tag stage">
+            <%= offer.type_contrat %>
+        </span>
+
+        <button
+            class="star-btn"
+            data-id="<%= offer.id %>"
+        >
+            ☆
+        </button>
+
+    </div>
+
+    <h3 class="job-title">
+        <%= offer.titre %>
+    </h3>
+
+    <p class="job-company">
+        <%= offer.ville %>
+    </p>
+
+    <p class="job-desc">
+        <%= offer.description %>
+    </p>
+
+    <div class="skill-tags">
+
+        <% if (offer.technologies) { %>
+
+            <% offer.technologies.forEach(technology => { %>
+
+                <span class="skill-tag">
+                    <%= technology %>
+                </span>
+
+            <% }) %>
+
+        <% } %>
+
+    </div>
+
+    <div class="card-bottom">
+
+        <span class="job-date">
+            <%= dateForm  %>
+        </span>
+
+        <a
+            href="/offres/<%= offer.id %>"
+            class="job-link"
+        >
+            Voir l'offre →
+        </a>
+
+    </div>
+
+</article>

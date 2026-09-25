@@ -1,17 +1,19 @@
 import express from "express"
+import offerRoutes from "./src/routes/offerRoutes.js"
 
-const app  = express()
+const app = express()
 
-const PORT = process.env.DB_PORT || 3000
+const PORT = 3000
 
-
-app.set("view engine" , "ejs")
-app.set("views" , "./src/views")
+app.set("view engine", "ejs")
+app.set("views", "./src/views")
 
 app.use(express.static("public"))
 
+app.use(offerRoutes)
+
 app.get("/", (req, res) => {
-    res.render("pages/offers")
+    res.redirect("/offers")
 })
 
 app.listen(PORT, () => {
