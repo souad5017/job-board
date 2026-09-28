@@ -6,7 +6,7 @@ Portail web interne permettant de centraliser les offres de stages et d'alternan
 
 L'objectif est de faciliter la consultation des offres, la recherche, le filtrage, l'accès aux détails d'une offre et le suivi des opportunités intéressantes.
 
-Ce projet est réalisé dans le cadre de la formation **Développeur MERN 2026/2027**.
+Le projet est réalisé dans le cadre de la formation **Développeur MERN 2026/2027**.
 
 ---
 
@@ -22,95 +22,90 @@ Le portail permet de :
 * consulter le détail d'une offre ;
 * suivre ou retirer une offre suivie ;
 * conserver les offres suivies avec `localStorage` ;
-* gérer les états de chargement, d'erreur et d'absence de résultats.
+* gérer les offres depuis une interface d'administration ;
+* créer, modifier et supprimer des offres ;
+* associer plusieurs technologies à une offre.
 
 ---
 
 ## Utilisateurs
 
-### Apprenant
+### Visiteur / Apprenant
 
-L'apprenant peut :
+Le visiteur peut :
 
 * consulter les offres ;
-* rechercher et filtrer les offres ;
+* rechercher une offre ;
+* filtrer les offres ;
 * combiner plusieurs filtres ;
 * consulter le détail d'une offre ;
 * suivre ou retirer une offre suivie.
 
-### Visiteur
+Les offres suivies sont conservées localement dans le navigateur avec `localStorage`.
 
-Le visiteur peut consulter les offres publiques.
+### Administrateur
 
+L'administrateur peut :
+
+* consulter les offres ;
+* ajouter une offre ;
+* modifier une offre ;
+* supprimer une offre ;
+* sélectionner une entreprise ;
+* associer plusieurs technologies à une offre.
+
+> L'authentification et la gestion avancée des comptes ne font pas partie du périmètre actuel.
 
 ---
 
 ## Pages
 
-### Pages principales
+### Partie publique
 
-* `index.html` — Liste des offres
-* `offre-detail.html` — Détail d'une offre
-* `deposer-offre.html` — Dépôt d'une offre
-* `offres-suivies.html` — Offres suivies
+* `/offers` — Liste des offres
+* `/offers/:id` — Détail d'une offre
+* `/offres-suivies` — Offres suivies
+* `/deposer-offre` — Dépôt d'une offre
 
----
+### Partie administration
 
-## Structure du projet
-
-```text
-job-board/
-│
-├── index.html
-├── offre-detail.html
-├── deposer-offre.html
-├── offres-suivies.html
-│
-├── data/
-│   └── offres.json
-│
-├── js/
-│   ├── app.js
-│   ├── data.js
-│   ├── filters.js
-│   ├── render.js
-│   └── storage.js
-│
-├── css/
-│   └── style.css
-│
-├── docs/
-│   ├── analyse-cahier-des-charges.md
-│   ├── jira-export.md
-│   └── figma-link.md
-│
-└── README.md
-```
+* `/admin` — Tableau de bord
+* `/admin/offers/new` — Ajouter une offre
+* `/admin/offers/:id/edit` — Modifier une offre
 
 ---
 
-## Fonctionnalités du Brief 2
+## Fonctionnalités
 
-### Chargement des données
+### Liste des offres
 
-Les offres sont stockées dans un fichier JSON :
+Les offres sont récupérées depuis la base de données MySQL.
 
-```text
-data/offres.json
-```
-
-Les données sont récupérées avec :
-
-* `fetch()`
-* `async/await`
-
-### Recherche
-
-La recherche permet de rechercher une offre par :
+Chaque offre affiche notamment :
 
 * titre ;
 * entreprise ;
-* description.
+* ville ;
+* type de contrat ;
+* description ;
+* technologies ;
+* date de publication.
+
+Les offres sont triées par date de publication décroissante.
+
+### Recherche
+
+La recherche permet de rechercher une offre par mot-clé dans :
+
+* le titre ;
+* la description ;
+* le nom de l'entreprise.
+
+Exemple :
+
+```text
+/offers?search=React
+```
 
 ### Filtres
 
@@ -122,34 +117,262 @@ Les offres peuvent être filtrées par :
 
 Les filtres sont combinables.
 
-Par exemple :
+Exemple :
 
 ```text
-Type : Stage
-Ville : Rabat
-Technologie : React
+/offers?type=Stage&city=Casablanca&tech=2
 ```
 
-Les résultats sont mis à jour dynamiquement.
+La recherche peut également être combinée avec les filtres :
+
+```text
+/offers?search=React&type=Stage&city=Casablanca&tech=2
+```
+
+Les filtres sont appliqués côté serveur avec des requêtes SQL préparées.
 
 ### Détail d'une offre
 
-Chaque offre possède une page de détail accessible depuis la liste des offres.
+Chaque offre possède une page de détail accessible depuis la liste.
 
-L'identifiant de l'offre est transmis dans l'URL :
+Exemple :
 
 ```text
-offre-detail.html?id=1
+/offers/1
 ```
 
 ### Offres suivies
 
-Les offres peuvent être suivies par l'utilisateur.
+L'utilisateur peut suivre une offre grâce à l'icône étoile.
 
-Les offres suivies sont conservées dans le navigateur avec :
+Les identifiants des offres suivies sont conservés dans le navigateur avec :
 
 ```text
 localStorage
+```
+
+Clé utilisée :
+
+```text
+followed_offers_ids
+```
+
+Cette fonctionnalité ne nécessite pas de compte utilisateur.
+
+---
+
+## Administration
+
+L'espace d'administration permet de gérer les offres.
+
+### Ajouter une offre
+
+L'administrateur peut renseigner :
+
+* titre ;
+* description ;
+* ville ;
+* type de contrat ;
+* entreprise ;
+* technologies.
+
+### Modifier une offre
+
+Une offre existante peut être modifiée.
+
+Les technologies associées sont également mises à jour.
+
+### Supprimer une offre
+
+Une offre peut être supprimée depuis l'espace d'administration.
+
+Les relations associées dans la table `offre_technologie` sont automatiquement supprimées grâce aux contraintes de clé étrangère.
+
+---
+
+## Base de données
+
+Le projet utilise **MySQL**.
+
+### Tables principales
+
+```text
+entreprise
+    │
+    │ 1
+    │
+    │ N
+   offre
+    │
+    │ N
+    │
+    │ N
+offre_technologie
+    │
+    │ N
+    │
+    │ 1
+technologie
+```
+
+### Tables
+
+#### `entreprise`
+
+Stocke les entreprises proposant des offres.
+
+Principales colonnes :
+
+* `id`
+* `nom`
+* `ville`
+* `description`
+
+#### `offre`
+
+Stocke les offres de stage et d'alternance.
+
+Principales colonnes :
+
+* `id`
+* `titre`
+* `description`
+* `ville`
+* `type_contrat`
+* `date_publication`
+* `entreprise_id`
+
+#### `technologie`
+
+Stocke les technologies utilisées dans les offres.
+
+Principales colonnes :
+
+* `id`
+* `nom`
+
+#### `offre_technologie`
+
+Table d'association entre les offres et les technologies.
+
+Elle permet une relation **many-to-many** :
+
+```text
+Une offre → plusieurs technologies
+Une technologie → plusieurs offres
+```
+
+---
+
+## Structure du projet
+
+```text
+job-board/
+│
+├── database/
+│   ├── schema.sql
+│   ├── seed.js
+│   └── reset.js
+│
+├── docs/
+│   ├── analyse-cahier-des-charges.md
+│   ├── class-diagram.md
+│   ├── class-diagram.png
+│   ├── data-dictionary.md
+│   ├── relational-model.md
+│   ├── relational-model.png
+│   ├── use-case-diagram.md
+│   ├── use-case-diagram.png
+│   ├── figma-link.md
+│   └── jira-export.md
+│
+├── public/
+│   ├── css/
+│   │   └── style.css
+│   │
+│   └── js/
+│       └── followed.js
+│
+├── src/
+│   ├── config/
+│   │   └── db.js
+│   │
+│   ├── repositories/
+│   │   ├── offerRepository.js
+│   │   ├── companyRepository.js
+│   │   └── technologyRepository.js
+│   │
+│   ├── routes/
+│   │   ├── offerRoutes.js
+│   │   └── adminRoutes.js
+│   │
+│   └── views/
+│       ├── pages/
+│       │   ├── offers.ejs
+│       │   ├── offer-detail.ejs
+│       │   ├── followed-offers.ejs
+│       │   │
+│       │   └── admin/
+│       │       ├── dashboard.ejs
+│       │       ├── add-offer.ejs
+│       │       └── edit-offer.ejs
+│       │
+│       └── partials/
+│           ├── header.ejs
+│           ├── footer.ejs
+│           └── offer-card.ejs
+│
+├── app.js
+├── package.json
+├── package-lock.json
+├── .env
+├── .env.example
+├── .gitignore
+└── README.md
+```
+
+---
+
+## Architecture
+
+Le projet utilise une architecture simple basée sur :
+
+```text
+Route
+   ↓
+Repository
+   ↓
+MySQL
+   ↓
+EJS
+```
+
+### Routes
+
+Les routes reçoivent les requêtes HTTP et préparent les données nécessaires aux vues.
+
+### Repositories
+
+Les repositories contiennent les requêtes SQL permettant d'accéder à la base de données.
+
+Exemples :
+
+```text
+offerRepository.js
+companyRepository.js
+technologyRepository.js
+```
+
+### EJS
+
+Les vues EJS permettent de générer les pages HTML côté serveur.
+
+Des partials sont utilisés pour éviter de répéter les composants communs :
+
+```text
+header.ejs
+footer.ejs
+offer-card.ejs
 ```
 
 ---
@@ -158,42 +381,102 @@ localStorage
 
 Cette version utilise :
 
+* Node.js
+* Express.js
+* EJS
+* MySQL
+* mysql2
+* JavaScript
 * HTML5
 * CSS3
-* JavaScript Vanilla
-* JSON
-* Fetch API
-* Async/Await
-* DOM
-* LocalStorage
+* `localStorage`
 * Git
 * GitHub
 
-Aucun framework JavaScript n'est utilisé dans cette version.
+### Packages principaux
 
-Le backend, la base de données et l'API REST seront développés dans les briefs suivants.
+```text
+express
+ejs
+mysql2
+dotenv
+```
+
+---
+
+## Gestion des données
+
+Les requêtes SQL utilisent des paramètres préparés avec `?`.
+
+Exemple :
+
+```js
+const [offers] = await db.execute(`
+    SELECT *
+    FROM offre
+    WHERE ville = ?
+`, [city])
+```
+
+Cela permet de séparer les données utilisateur de la requête SQL.
+
+---
+
+## Seed et base de données
+
+Le projet contient des scripts pour préparer les données de développement.
+
+### Création du schéma
+
+Le fichier :
+
+```text
+database/schema.sql
+```
+
+contient la structure de la base de données.
+
+### Données de test
+
+Le fichier :
+
+```text
+database/seed.js
+```
+
+permet d'insérer les données de démonstration.
+
+### Réinitialisation
+
+Le fichier :
+
+```text
+database/reset.js
+```
+
+permet de réinitialiser les données selon la configuration du projet.
 
 ---
 
 ## Conception
 
-Les maquettes du portail sont réalisées avec **Figma**.
+Les documents de conception sont disponibles dans le dossier `docs/`.
 
-Les écrans prévus comprennent :
+Ils comprennent notamment :
 
-* liste des offres ;
-* détail d'une offre ;
-* dépôt d'une offre ;
-* offres suivies ;
-* administration des offres ;
-* versions desktop et mobile ;
-* composants réutilisables.
+* analyse du cahier des charges ;
+* diagramme de classes ;
+* diagramme de cas d'utilisation ;
+* modèle relationnel ;
+* dictionnaire de données ;
+* lien vers la maquette Figma ;
+* export du projet Jira.
 
 ### Figma
 
 Lien vers la maquette :
 
-https://www.figma.com/design/5ETwMnUKqQr5G0h5Rgz70i/Untitled?node-id=19-794&m=dev&t=MXrSpfF6Mk7H6gwT-1
+[Maquette Figma](https://www.figma.com/design/5ETwMnUKqQr5G0h5Rgz70i/Untitled?node-id=19-794&m=dev&t=MXrSpfF6Mk7H6gwT-1&utm_source=chatgpt.com)
 
 ---
 
@@ -211,9 +494,7 @@ Le backlog contient notamment :
 
 ### Jira
 
-Lien vers le projet Jira :
-
-https://outergamoustafa-1764845699446.atlassian.net/jira/software/projects/PJB/boards/368?filter=&groupBy=none
+[Projet Jira PJB](https://outergamoustafa-1764845699446.atlassian.net/jira/software/projects/PJB/boards/368?filter=&groupBy=none&utm_source=chatgpt.com)
 
 ---
 
@@ -221,25 +502,22 @@ https://outergamoustafa-1764845699446.atlassian.net/jira/software/projects/PJB/b
 
 L'interface est conçue pour être utilisable sur :
 
-*  Mobile
-*  Tablette
-*  Desktop
+* Mobile ;
+* Tablette ;
+* Desktop.
 
 L'objectif est de conserver une interface claire, lisible et cohérente sur les différentes tailles d'écran.
 
 ---
 
-## Hors périmètre du Brief 2
+## Hors périmètre actuel
 
-Cette version n'intègre pas encore :
+Cette version n'intègre pas :
 
 * authentification ;
 * création de compte ;
 * gestion de mot de passe ;
 * rôles et permissions avancés ;
-* backend ;
-* base de données ;
-* API REST ;
 * candidature en ligne complète ;
 * upload de CV ;
 * envoi automatique d'emails ;
@@ -251,38 +529,65 @@ Cette version n'intègre pas encore :
 
 ---
 
-## Évolution prévue
+## Installation
 
-Les prochaines versions pourront intégrer :
-
-* backend Express/EJS ;
-* MySQL ;
-* API REST ;
-* authentification ;
-* gestion complète des offres ;
-* interface d'administration fonctionnelle ;
-* gestion des utilisateurs ;
-* gestion des candidatures.
-
----
-
-## Installation et lancement
-
-Cloner le projet :
+### 1. Cloner le projet
 
 ```bash
 git clone https://github.com/souad5017/job-board.git
 ```
 
-Se placer dans le projet :
+### 2. Se placer dans le projet
 
 ```bash
 cd job-board
 ```
 
-L'application doit être lancée avec un serveur local afin de permettre le chargement du fichier JSON avec `fetch()`.
+### 3. Installer les dépendances
 
-Par exemple, avec l'extension **Live Server** de VS Code.
+```bash
+npm install
+```
+
+### 4. Configurer les variables d'environnement
+
+Créer un fichier `.env` :
+
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=job_board
+DB_PORT=3306
+```
+
+### 5. Créer la base de données
+
+Exécuter le fichier :
+
+```text
+database/schema.sql
+```
+
+dans MySQL.
+
+### 6. Insérer les données de test
+
+```bash
+npm run db:seed
+```
+
+### 7. Lancer le serveur
+
+```bash
+node app.js
+```
+
+Puis ouvrir :
+
+```text
+http://localhost:3000
+```
 
 ---
 
@@ -290,13 +595,78 @@ Par exemple, avec l'extension **Live Server** de VS Code.
 
 Le projet utilise Git pour le suivi des versions.
 
-Les fonctionnalités sont développées sur des branches dédiées, puis intégrées dans la branche principale.
+Les fonctionnalités sont développées sur des branches dédiées.
 
-Exemples de branches :
+Branches principales du projet :
 
 ```text
-brief-2/json-data
-brief-2/dynamic-rendering
-brief-2/filters-search
-brief-2/followed-offers
+brief-3/database-design
+brief-3/database
+brief-3/express-setup
+brief-3/public-offers
+brief-3/search-filters
+brief-3/admin-crud
+brief-3/followed-offers
+brief-3/documentation
 ```
+
+Les commits suivent une convention simple :
+
+```text
+feat: nouvelle fonctionnalité
+fix: correction d'un bug
+docs: modification de la documentation
+chore: nettoyage ou maintenance du projet
+```
+
+Exemple :
+
+```bash
+git commit -m "feat: add search and filters"
+```
+
+---
+
+## Évolution du projet
+
+### Brief 2
+
+La première version utilisait :
+
+```text
+HTML
+CSS
+JavaScript Vanilla
+JSON
+Fetch API
+localStorage
+```
+
+Les données étaient stockées dans un fichier JSON.
+
+### Brief 3
+
+La version actuelle utilise :
+
+```text
+Node.js
+Express.js
+EJS
+MySQL
+mysql2
+dotenv
+```
+
+Les données sont maintenant stockées dans une base de données relationnelle.
+
+La recherche et les filtres sont exécutés côté serveur avec SQL.
+
+L'administration permet également de gérer les offres.
+
+---
+
+## Auteur
+
+**Souad El Barjiji**
+
+Projet réalisé dans le cadre de la formation **Développeur MERN 2026/2027**.
