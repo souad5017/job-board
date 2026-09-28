@@ -1,0 +1,201 @@
+<%- include("../../partials/header") %>
+
+<div class="admin-page">
+
+    <div class="admin-header">
+
+        <div>
+            <h1>Administration</h1>
+
+            <p class="page-sub">
+                Modifier une offre
+            </p>
+        </div>
+
+    </div>
+
+
+    <form
+        class="admin-form-panel"
+        action="/admin/offers/<%= offer.id %>"
+        method="POST"
+    >
+
+        <h2>Modifier l'offre</h2>
+
+
+        <div class="admin-form-grid">
+
+
+            <div class="admin-form-group">
+
+                <label for="titre">
+                    Titre <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="titre"
+                    name="titre"
+                    value="<%= offer.titre %>"
+                    required
+                >
+
+            </div>
+
+
+            <div class="admin-form-group">
+
+                <label for="entreprise_id">
+                    Entreprise <span class="required">*</span>
+                </label>
+
+                <select
+                    id="entreprise_id"
+                    name="entreprise_id"
+                    required
+                >
+
+                    <% companies.forEach(company => { %>
+
+                        <option
+                            value="<%= company.id %>"
+                            <%= company.id === offer.entreprise_id ? "selected" : "" %>
+                        >
+                            <%= company.nom %>
+                        </option>
+
+                    <% }) %>
+
+                </select>
+
+            </div>
+
+
+            <div class="admin-form-group">
+
+                <label for="ville">
+                    Ville <span class="required">*</span>
+                </label>
+
+                <input
+                    type="text"
+                    id="ville"
+                    name="ville"
+                    value="<%= offer.ville %>"
+                    required
+                >
+
+            </div>
+
+
+            <div class="admin-form-group">
+
+                <label for="type_contrat">
+                    Type de contrat <span class="required">*</span>
+                </label>
+
+                <select
+                    id="type_contrat"
+                    name="type_contrat"
+                    required
+                >
+
+                    <option
+                        value="Stage"
+                        <%= offer.type_contrat === "Stage" ? "selected" : "" %>
+                    >
+                        Stage
+                    </option>
+
+                    <option
+                        value="CDI"
+                        <%= offer.type_contrat === "CDI" ? "selected" : "" %>
+                    >
+                        CDI
+                    </option>
+
+                    <option
+                        value="CDD"
+                        <%= offer.type_contrat === "CDD" ? "selected" : "" %>
+                    >
+                        CDD
+                    </option>
+
+                </select>
+
+            </div>
+            <div class="admin-form-group full">
+
+    <label>Technologies</label>
+
+    <div class="technology-list">
+
+        <% technologies.forEach(technology => { %>
+
+                   <label class="technology-item">
+
+                <input
+                    type="checkbox"
+                    name="technologies"
+                    value="<%= technology.id %>"
+                    <%= selectedTechnologies.some(
+                        selected => selected.id === technology.id
+                    ) ? "checked" : "" %>
+                >
+
+                <span>
+                    <%= technology.nom %>
+                </span>
+
+            </label>
+
+        <% }) %>
+
+    </div>
+
+</div>
+
+
+            <div class="admin-form-group full">
+
+                <label for="description">
+                    Description <span class="required">*</span>
+                </label>
+
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="7"
+                    required
+                ><%= offer.description %></textarea>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="admin-form-actions">
+
+            <a
+                href="/admin"
+                class="btn-outline"
+            >
+                Annuler
+            </a>
+
+            <button
+                type="submit"
+                class="btn-dark"
+            >
+                Enregistrer
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<%- include("../../partials/footer") %>
