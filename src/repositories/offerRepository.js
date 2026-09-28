@@ -1,24 +1,98 @@
 import db from "../config/db.js";
 
 
-export async function getOffers() {
-    const [offers] = await db.execute(`
- SELECT offre.* ,entreprise.id AS entreprise_id, entreprise.nom AS entreprise_nom, entreprise.ville AS entreprise_ville, entreprise.description AS entreprise_description
-          FROM offre 
-              JOIN entreprise ON 
-entreprise.id = offre.entreprise_id
-ORDER BY offre.date_publication desc
+export async function getOffers(filters = {}) {
 
-`)
+    const { search, type, city, tech } = filters
+    let sql = `
+        SELECT
+            offre.*,
+            entreprise.id AS entreprise_id,
+            entreprise.nom AS entreprise_nom,
+            entreprise.ville AS entreprise_ville,
+            entreprise.description AS entreprise_description
+        FROM offre
+        JOIN entreprise
+            ON entreprise.id = offre.entreprise_id
+    `
+
+    const conditions = []
+    const values = []
+
+    if (search) {
+
+        conditions.push(`
+            (
+                offre.titre LIKE ?
+                OR offre.description LIKE ?
+                OR entreprise.nom LIKE ?
+            )
+        `)
+
+        const searchValue = `%${search}%`
+
+        values.push(
+            searchValue,
+            searchValue,
+            searchValue
+        )
+    }
+
+    if (type) {
+
+        conditions.push(`
+            offre.type_contrat = ?
+        `)
+
+        values.push(type)
+    }
+
+    if (city) {
+
+        conditions.push(`
+            offre.ville = ?
+        `)
+
+        values.push(city)
+    }
+    if (tech) {
+
+        conditions.push(`
+        EXISTS (
+            SELECT 1
+            FROM offre_technologie
+            WHERE offre_technologie.offre_id = offre.id
+            AND offre_technologie.technologie_id = ?
+        )
+    `)
+
+        values.push(tech)
+    }
+    if (conditions.length > 0) {
+
+        sql += `
+            WHERE ${conditions.join(" AND ")}
+        `
+    }
+
+    sql += `
+        ORDER BY offre.date_publication DESC
+    `
+
+    const [offers] = await db.execute(sql, values)
+
     for (const offer of offers) {
         const [technologies] = await db.execute(`
-            SELECT * FROM  technologie
-inner JOIN offre_technologie 
-ON technologie.id = offre_technologie.technologie_id
-WHERE offre_technologie.offre_id = ?
+            SELECT *
+            FROM technologie
+            INNER JOIN offre_technologie
+                ON technologie.id = offre_technologie.technologie_id
+            WHERE offre_technologie.offre_id = ?
+        `, [offer.id])
 
-            `, [offer.id])
-        offer.technologies = technologies.map(technologie => technologie.nom)
+        offer.technologies = technologies.map(
+            technologie => technologie.nom
+        )
     }
 
 
@@ -123,7 +197,7 @@ export async function updateOffer(id, offer) {
             (offre_id, technologie_id)
             VALUES (?, ?)
         `, [
-            id,technologyId
+            id, technologyId
         ])
     }
 }
