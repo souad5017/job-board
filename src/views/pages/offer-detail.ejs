@@ -1,0 +1,117 @@
+<%
+    const date = new Date(offer.date_publication)
+
+    const dateForm = date.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+    })
+%>
+<%- include("../partials/header") %>
+
+<div class="page">
+
+    <a href="/offers" class="back-link">
+        ← Retour aux offres
+    </a>
+
+    <section class="offer-hero">
+
+        <div>
+
+            <div class="offer-hero-meta">
+
+                <span class="tag stage">
+                    <%= offer.type_contrat %>
+                </span>
+
+                <span>
+                    <%= dateForm %>
+                </span>
+
+            </div>
+
+            <h1>
+                <%= offer.titre %>
+            </h1>
+
+            <p class="company">
+                <%= offer.entreprise_nom %> • <%= offer.ville %>
+            </p>
+            <%
+%>
+
+        </div>
+
+        <button class="follow-btn">
+            ☆ Suivre
+        </button>
+
+    </section>
+
+
+    <div class="content-grid">
+
+        <div class="stack">
+
+            <div class="panel">
+
+                <h2>
+                    Mission
+                </h2>
+
+                <p>
+                    <%= offer.description %>
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="stack">
+
+            <div class="panel">
+
+                <h2>
+                    Technologies
+                </h2>
+
+                <div class="skill-tags">
+
+                    <% offer.technologies.forEach(technology => { %>
+
+                        <span class="skill-tag">
+                            <%= technology %>
+                        </span>
+
+                    <% }) %>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h2>
+                    Entreprise
+                </h2>
+
+                <p class="company-name">
+                    <%= offer.entreprise_nom %>
+                </p>
+
+                <p>
+                    <%= offer.entreprise_description %>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<%- include("../partials/footer") %>
