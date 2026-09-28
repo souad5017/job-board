@@ -1,0 +1,38 @@
+<%- include("../partials/header") %>
+
+<div class="page suivies-page">
+
+    <h1>Offres suivies</h1>
+
+    <p class="page-sub" id="suivies-count">
+        Chargement...
+    </p>
+
+    <main class="listings" id="listings">
+
+        <% offers.forEach(offer => { %>
+
+            <div
+                class="followed-offer"
+                data-id="<%= offer.id %>"
+            >
+                <%- include("../partials/offer-card", { offer }) %>
+            </div>
+
+        <% }) %>
+
+    </main>
+
+    <p
+        id="empty-followed"
+        class="empty-message"
+        style="display: none;"
+    >
+        Aucune offre suivie.
+    </p>
+
+</div>
+
+<script src="/js/followed.js"></script>
+
+<%- include("../partials/footer") %>

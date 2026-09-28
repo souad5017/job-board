@@ -26,5 +26,20 @@ router.get("/offers/:id", async (request, response) => {
     }
 
 })
+router.get("/offres-suivies", async (request, response) => {
+
+    try {
+
+        const offers = await getOffers()
+
+        response.render("pages/followed-offers", {
+            offers
+        })
+
+    } catch (error) {
+
+        console.error(error)
+    }
+})
 
 export default router
