@@ -64,3 +64,75 @@ export async function getOfferById(id) {
 }
 
 // getOfferById(5)
+
+export async function createOffer(offer) {
+    const { titre, description, ville, type_contrat, entreprise_id, technologies
+    } = offer
+
+    const [result] = await db.execute(`
+        INSERT INTO offre
+        ( 
+    titre, description, ville, type_contrat, date_publication, entreprise_id 
+        )
+        VALUES (?, ?, ?, ?, CURDATE(), ?)
+    `, [
+        titre, description, ville, type_contrat, entreprise_id
+    ])
+
+    const offerId = result.insertId
+
+    if (technologies) {
+
+        for (const technologyId of technologies) {
+
+            await db.execute(`
+                INSERT INTO offre_technologie
+                (offre_id, technologie_id)
+                VALUES (?, ?)
+            `, [
+                offerId,
+                technologyId
+            ])
+        }
+    }
+
+    return offerId
+}
+
+export async function updateOffer(id, offer) {
+
+    const {
+        titre, description, ville, type_contrat, entreprise_id, technologies
+    } = offer
+
+    await db.execute(`
+        UPDATE offre
+        SET titre = ?, description = ?, ville = ?, type_contrat = ?, entreprise_id = ?
+        WHERE id = ?
+    `, [titre, description, ville, type_contrat, entreprise_id, id
+    ])
+    await db.execute(`
+        DELETE FROM offre_technologie
+        WHERE offre_id = ?
+    `, [id])
+
+    for (const technologyId of technologies) {
+
+        await db.execute(`
+            INSERT INTO offre_technologie
+            (offre_id, technologie_id)
+            VALUES (?, ?)
+        `, [
+            id,technologyId
+        ])
+    }
+}
+
+export async function deleteOffer(id) {
+
+    await db.execute(`
+        DELETE FROM offre
+        WHERE id = ?
+    `, [id])
+
+}

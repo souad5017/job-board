@@ -1,5 +1,6 @@
 import express from "express"
 import offerRoutes from "./src/routes/offerRoutes.js"
+import adminRoutes from "./src/routes/adminRoutes.js"
 
 const app = express()
 
@@ -9,8 +10,10 @@ app.set("view engine", "ejs")
 app.set("views", "./src/views")
 
 app.use(express.static("public"))
+app.use(express.urlencoded({ extended: true }))
 
 app.use(offerRoutes)
+app.use(adminRoutes)
 
 app.get("/", (req, res) => {
     res.redirect("/offers")
